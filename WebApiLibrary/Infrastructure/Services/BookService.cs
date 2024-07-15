@@ -58,11 +58,11 @@ namespace WebApiLibrary.Infrastructure.Services
             }
 
         }
-        public async Task<Paginated<Book>> GetBooksPaginationAsync(int page, int pageSize)
+        public async Task<Paginated<Book>> GetBooksPaginationAsync(int page, int pageSize, string queryTerm = null)
         {
             try
             {
-                return await _bookRepository.GetPaginationAsync(page, pageSize);
+                return await _bookRepository.GetPaginationAsync(page, pageSize, queryTerm);
             }
             catch (Exception ex)
             {

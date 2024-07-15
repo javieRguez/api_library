@@ -5,6 +5,6 @@ namespace WebApiLibrary.Domain.Interfaces.Repositories
 {
     public interface IBookRepository : IGenericRepository<Book>
     {
-        Task<Paginated<Book>> GetPaginationAsync(int page, int pageSize);
+        Task<Paginated<Book>> GetPaginationAsync(int page, int pageSize, string queryTerm = null);
     }
 }

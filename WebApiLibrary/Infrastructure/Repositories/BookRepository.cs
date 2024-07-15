@@ -15,10 +15,16 @@ namespace WebApiLibrary.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Paginated<Book>> GetPaginationAsync(int page, int pageSize)
+        public async Task<Paginated<Book>> GetPaginationAsync(int page, int pageSize, string queryTerm = null)
         {
-            var items = await _context
-                .Set<Book>()
+
+            var query = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(queryTerm))
+            {
+                query = query.Where(p => p.Name.Contains(queryTerm));
+            }
+            var items = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

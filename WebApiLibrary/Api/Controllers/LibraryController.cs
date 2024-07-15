@@ -63,11 +63,11 @@ namespace WebApiLibrary.Api.Controllers
         }
 
         [HttpGet("GetBooksPaginationAsync")]
-        public async Task<IActionResult> GetBooksPaginationAsync(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetBooksPaginationAsync(int page = 1, int pageSize = 10, string queryTerm = null)
         {
             try
             {
-                var books = await _bookService.GetBooksPaginationAsync(page, pageSize);
+                var books = await _bookService.GetBooksPaginationAsync(page, pageSize, queryTerm);
 
                 return Ok(books);
             }
