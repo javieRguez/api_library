@@ -33,3 +33,4 @@ C:\Users\SalsaDev\source\repos\WebApiLibrary\WebApiLibrary\obj\Debug\net8.0\refi
 C:\Users\SalsaDev\source\repos\WebApiLibrary\WebApiLibrary\obj\Debug\net8.0\WebApiLibrary.pdb
 C:\Users\SalsaDev\source\repos\WebApiLibrary\WebApiLibrary\obj\Debug\net8.0\WebApiLibrary.genruntimeconfig.cache
 C:\Users\SalsaDev\source\repos\WebApiLibrary\WebApiLibrary\obj\Debug\net8.0\ref\WebApiLibrary.dll
+C:\Users\SalsaDev\source\repos\WebApiLibrary\WebApiLibrary\obj\Debug\net8.0\WebApiLibrary.sourcelink.json

@@ -1,7 +1,10 @@
-﻿using WebApiLibrary.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Net;
+using WebApiLibrary.Domain.Entities;
 using WebApiLibrary.Domain.Entities.Generics;
 using WebApiLibrary.Domain.Interfaces.Repositories;
 using WebApiLibrary.Domain.Interfaces.Services;
+using WebApiLibrary.Infrastructure.Repositories;
 
 namespace WebApiLibrary.Infrastructure.Services
 {
@@ -9,37 +12,76 @@ namespace WebApiLibrary.Infrastructure.Services
     {
         private readonly IBookRepository _bookRepository;
 
+
         public BookService(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
         }
         public async Task AddBookAsync(Book book)
         {
-            await _bookRepository.AddAsync(book);
+            try
+            {
+                if (!(book.Quantity > 0))
+                {
+                    throw new ArgumentException("La cantidad tiene que ser mayor a 0.");
+                }
+                if (!(book.Price > 0))
+                {
+                    throw new ArgumentException("El precio tiene que ser mayor a 0.");
+                }
+                await _bookRepository.AddAsync(book);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
-        public void DeleteBook(Guid id)
+        public async Task DeleteBookAsync(Guid id)
         {
-            var book = _bookRepository.GetByIdAsync(id).Result;
-            if (book != null)
+            try
             {
-                _bookRepository.Delete(book);
+                var book = await _bookRepository.GetByIdAsync(id);
+                if (book != null)
+                {
+                    await _bookRepository.DeleteAsync(book);
+                }
+                else
+                {
+                    throw new ArgumentException("El libro no fue encontrado.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
+        public async Task<Paginated<Book>> GetBooksPaginationAsync(int page, int pageSize)
+        {
+            try
+            {
+                return await _bookRepository.GetPaginationAsync(page, pageSize);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
-        public async Task<Paginated<Book>> GetBooksPaginationAsync(int page, int pageSize)
+        public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
-            return await _bookRepository.GetPaginationAsync(page, pageSize);
-        }
+            try
+            {
+                var clients = await _bookRepository.GetAllAsync();
 
-        public async Task<Book> GetBookByIdAsync(Guid id)
-        {
-            return await _bookRepository.GetByIdAsync(id);
-        }
-
-        public void UpdateBook(Book book)
-        {
-            _bookRepository.Update(book);
+                return clients;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

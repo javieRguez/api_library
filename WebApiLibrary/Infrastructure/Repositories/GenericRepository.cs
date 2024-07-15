@@ -14,30 +14,21 @@ namespace WebApiLibrary.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+
         public async Task AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public void Delete(T entity)
+        public async Task DeleteAsync(T entity)
         {
             _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
-        }
-
-        public async Task<Paginated<T>> GetPaginationAsync(int page, int pageSize)
-        {
-            var items = await _context
-                .Set<T>()
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            var count = await _context.Set<T>().CountAsync();
-            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
-
-            return new Paginated<T>(items, page, totalPages);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<T> GetByIdAsync(Guid id)
@@ -45,10 +36,10 @@ namespace WebApiLibrary.Infrastructure.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public void Update(T entity)
+        public async Task UpdateAsync(T entity)
         {
             _context.Set<T>().Update(entity);
-            _context.SaveChanges();
+          await  _context.SaveChangesAsync();
         }
     }
 }

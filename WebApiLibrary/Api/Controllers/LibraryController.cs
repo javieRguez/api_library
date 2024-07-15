@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using WebApiLibrary.Domain.Entities;
 using WebApiLibrary.Domain.Interfaces.Services;
 
@@ -10,24 +11,178 @@ namespace WebApiLibrary.Api.Controllers
     {
 
         private readonly IBookService _bookService;
+        private readonly IBookLoanService _bookLoanService;
+        private readonly IClientService _clientService;
 
-        public LibraryController(IBookService bookService)
+        public LibraryController(IBookService bookService, IBookLoanService bookLoanService, IClientService clientService)
         {
             _bookService = bookService;
+            _bookLoanService = bookLoanService;
+            _clientService = clientService;
         }
-        [HttpGet("GetBooksPaginationAsync")]
-        public async Task<IActionResult> GetBooksPaginationAsync(int page, int pageSize)
-        {
-            var books = await _bookService.GetBooksPaginationAsync(page, pageSize);
 
-            return Ok(books);
+        [HttpGet("GetAllClientsAsync")]
+        public async Task<IActionResult> GetAllClientsAsync()
+        {
+            try
+            {
+                var clients = await _clientService.GetAllClientsAsync();
+
+                return Ok(clients);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
+        }
+        [HttpGet("GetAllBooksAsync")]
+        public async Task<IActionResult> GetAllBooksAsync()
+        {
+            try
+            {
+                var clients = await _bookService.GetAllBooksAsync();
+
+                return Ok(clients);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
+        }
+
+        [HttpGet("GetBooksPaginationAsync")]
+        public async Task<IActionResult> GetBooksPaginationAsync(int page = 1, int pageSize = 10)
+        {
+            try
+            {
+                var books = await _bookService.GetBooksPaginationAsync(page, pageSize);
+
+                return Ok(books);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
         }
 
         [HttpPost("AddBookAsync")]
-        public async Task<IActionResult> AddProductAsync(Book book)
+        public async Task<IActionResult> AddBookAsync(Book book)
         {
-            await _bookService.AddBookAsync(book);
-            return Ok();
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                await _bookService.AddBookAsync(book);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
+        }
+
+        [HttpPost("DeleteBookAsync")]
+        public async Task<IActionResult> DeleteBookAsync(Guid id)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    throw new ArgumentException("El ID del libro es un parametro requerido.");
+                }
+                await _bookService.DeleteBookAsync(id);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
+        }
+        [HttpPost("SaveBookLoanAsync")]
+        public async Task<IActionResult> SaveBookLoanAsync(Guid clientId, Guid bookId)
+        {
+            try
+            {
+                if (clientId == Guid.Empty)
+                {
+                    throw new ArgumentException("El ID del cliente es un parametro requerido.");
+                }
+                if (bookId == Guid.Empty)
+                {
+                    throw new ArgumentException("El ID del libro es un parametro requerido.");
+                }
+                await _bookLoanService.SaveBookLoanAsync(clientId, bookId);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
+        }
+        [HttpPost("ReturnBookAsync")]
+        public async Task<IActionResult> ReturnBookAsync(Guid clientId, Guid bookId)
+        {
+            try
+            {
+                if (clientId == Guid.Empty)
+                {
+                    throw new ArgumentException("El ID del cliente es un parametro requerido.");
+                }
+                if (bookId == Guid.Empty)
+                {
+                    throw new ArgumentException("El ID del libro es un parametro requerido.");
+                }
+                await _bookLoanService.ReturnBookAsync(clientId, bookId);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción no controlada: {ex.Message}");
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Se ha producido un error interno.");
+            }
         }
     }
 }
