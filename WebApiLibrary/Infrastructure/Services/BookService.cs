@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Net;
+using WebApiLibrary.Api.Exceptions;
 using WebApiLibrary.Domain.Entities;
 using WebApiLibrary.Domain.Entities.Generics;
 using WebApiLibrary.Domain.Interfaces.Repositories;
@@ -31,6 +32,10 @@ namespace WebApiLibrary.Infrastructure.Services
                 }
                 await _bookRepository.AddAsync(book);
             }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -49,8 +54,12 @@ namespace WebApiLibrary.Infrastructure.Services
                 }
                 else
                 {
-                    throw new ArgumentException("El libro no fue encontrado.");
+                    throw new NotFoundException("El libro no fue encontrado.");
                 }
+            }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -63,6 +72,10 @@ namespace WebApiLibrary.Infrastructure.Services
             try
             {
                 return await _bookRepository.GetPaginationAsync(page, pageSize, queryTerm);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -77,6 +90,10 @@ namespace WebApiLibrary.Infrastructure.Services
                 var clients = await _bookRepository.GetAllAsync();
 
                 return clients;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
             }
             catch (Exception ex)
             {

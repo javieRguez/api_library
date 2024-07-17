@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using WebApiLibrary.Api.Exceptions;
 using WebApiLibrary.Domain.Entities;
 using WebApiLibrary.Domain.Interfaces.Services;
 
@@ -32,7 +33,7 @@ namespace WebApiLibrary.Api.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -52,7 +53,7 @@ namespace WebApiLibrary.Api.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -73,7 +74,7 @@ namespace WebApiLibrary.Api.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -93,11 +94,12 @@ namespace WebApiLibrary.Api.Controllers
                     return BadRequest(ModelState);
                 }
                 await _bookService.AddBookAsync(book);
+
                 return Ok();
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -121,7 +123,11 @@ namespace WebApiLibrary.Api.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -148,7 +154,11 @@ namespace WebApiLibrary.Api.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -175,7 +185,11 @@ namespace WebApiLibrary.Api.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {

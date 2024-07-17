@@ -22,7 +22,7 @@ namespace WebApiLibrary.Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(queryTerm))
             {
-                query = query.Where(p => p.Name.Contains(queryTerm));
+                query = query.Where(p => p.Name.ToLower().Contains(queryTerm.ToLower()));
             }
             var items = await query
                 .Skip((page - 1) * pageSize)

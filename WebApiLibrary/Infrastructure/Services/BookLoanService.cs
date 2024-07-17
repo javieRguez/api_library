@@ -1,4 +1,5 @@
-﻿using WebApiLibrary.Domain.Entities;
+﻿using WebApiLibrary.Api.Exceptions;
+using WebApiLibrary.Domain.Entities;
 using WebApiLibrary.Domain.Interfaces.Repositories;
 using WebApiLibrary.Domain.Interfaces.Services;
 
@@ -25,17 +26,22 @@ namespace WebApiLibrary.Infrastructure.Services
 
                 if (client == null)
                 {
-                    throw new ArgumentException("El cliente no fue encontrado.");
+                    throw new NotFoundException("El cliente no fue encontrado.");
                 }
                 var book = await _bookRepository.GetByIdAsync(bookId);
 
                 if(book == null)
                 {
-                    throw new ArgumentException("El libro no fue encontrado.");
+                    throw new NotFoundException("El libro no fue encontrado.");
                 }
 
                 if (book.Quantity > 0)
                 {
+                    var existBookLoan = await _bookLoanRepository.GettBookLoanAsync(clientId, bookId);
+                    if (existBookLoan!= null)
+                    {
+                        throw new ArgumentException("Ya existe un prestamo con el libro.");
+                    }
                     var newLoan = new BookLoan
                     {
                         Id = Guid.NewGuid(),
@@ -52,6 +58,14 @@ namespace WebApiLibrary.Infrastructure.Services
                     throw new ArgumentException("No hay copias disponibles para prestar");
                 }
             }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -66,7 +80,7 @@ namespace WebApiLibrary.Infrastructure.Services
                 var book = await _bookRepository.GetByIdAsync(bookId);
                 if (book == null)
                 {
-                    throw new ArgumentException("El libro no fue encontrado.");
+                    throw new NotFoundException("El libro no fue encontrado.");
                 }
                 var bookLoan = await _bookLoanRepository.GettBookLoanAsync(clientId, bookId);
 
@@ -78,8 +92,12 @@ namespace WebApiLibrary.Infrastructure.Services
                 }
                 else
                 {
-                    throw new ArgumentException("El prestamo no fue encontrado.");
+                    throw new NotFoundException("El prestamo no fue encontrado.");
                 }
+            }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException(ex.Message);
             }
             catch (Exception ex)
             {
